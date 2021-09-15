@@ -8,7 +8,7 @@ public class Book {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long bookId;
+    private Long bookId;
 
     @Column(name = "title")
     private String title;
@@ -18,7 +18,7 @@ public class Book {
 
     public Book(){}
 
-    public void setBookId(long bookId) {
+    public void setBookId(Long bookId) {
         this.bookId=bookId;
     }
 
@@ -30,7 +30,7 @@ public class Book {
         this.description=description;
     }
 
-    public long getBookId() {
+    public Long getBookId() {
         return bookId;
     }
 

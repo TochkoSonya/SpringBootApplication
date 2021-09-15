@@ -8,7 +8,7 @@ public class Author {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long authorId;
+    private Long authorId;
 
     @Column(name = "firstName")
     private String firstName;
@@ -18,7 +18,7 @@ public class Author {
 
     public Author() {}
 
-    public long getAuthorId() {
+    public Long getAuthorId() {
         return authorId;
     }
 
@@ -30,7 +30,7 @@ public class Author {
         return lastName;
     }
 
-    public void setAuthorId(long authorId) {
+    public void setAuthorId(Long authorId) {
         this.authorId = authorId;
     }
 

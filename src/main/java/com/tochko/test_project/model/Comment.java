@@ -8,14 +8,14 @@ public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long commentId;
+    private Long commentId;
 
     @Column(name="text")
     private String text;
 
     public Comment() {}
 
-    public long getCommentId() {
+    public Long getCommentId() {
         return commentId;
     }
 
@@ -23,7 +23,7 @@ public class Comment {
         return text;
     }
 
-    public void setCommentId(long commentId) {
+    public void setCommentId(Long commentId) {
         this.commentId = commentId;
     }
 
