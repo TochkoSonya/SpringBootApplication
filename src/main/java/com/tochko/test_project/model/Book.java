@@ -1,6 +1,7 @@
 package com.tochko.test_project.model;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "books")
@@ -16,7 +17,15 @@ public class Book {
     @Column(name = "description")
     private String description;
 
+    @OneToMany(mappedBy = "book")
+    private List<Comment> comments;
+
     public Book(){}
+
+    public Book(String title, String description){
+        this.title=title;
+        this.description=description;
+    }
 
     public void setBookId(Long bookId) {
         this.bookId=bookId;

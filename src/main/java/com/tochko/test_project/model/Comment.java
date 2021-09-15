@@ -13,6 +13,10 @@ public class Comment {
     @Column(name="text")
     private String text;
 
+    @ManyToOne
+    @JoinColumn(name="book_id")
+    private Book book;
+
     public Comment() {}
 
     public Long getCommentId() {
@@ -29,6 +33,14 @@ public class Comment {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public void setBook(Book book) {
+        this.book = book;
+    }
+
+    public Book getBook() {
+        return book;
     }
 
     @Override
