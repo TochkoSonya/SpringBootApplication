@@ -13,7 +13,7 @@ public class Comment {
     @Column(name="text")
     private String text;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="book_id")
     private Book book;
 

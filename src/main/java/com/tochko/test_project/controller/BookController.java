@@ -1,7 +1,6 @@
 package com.tochko.test_project.controller;
 
 import com.tochko.test_project.model.Book;
-import com.tochko.test_project.repository.BookRepository;
 import com.tochko.test_project.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,29 +12,27 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
-@CrossOrigin(origins = "http://localhost:8081")
 @RestController
 @RequestMapping("/api")
 public class BookController {
 
     @Autowired
-    BookRepository bookRepository;
+    BookService bookService;
 
     @GetMapping("/books")
     public ResponseEntity<List<Book>> getAllBooks(
                     @RequestParam(required = false) String title,
                     @RequestParam(defaultValue = "0") int page,
                     @RequestParam(defaultValue = "3") int size ) {
-
         try {
-            List<Book> books = new ArrayList<Book>();
+            List<Book> books;
             Pageable paging = PageRequest.of(page, size);
 
             Page<Book> pageBooks;
             if (title == null)
-                pageBooks = bookRepository.findAll(paging);
+                pageBooks = bookService.findAll(paging);
             else
-                pageBooks = bookRepository.findByTitle(title, paging);
+                pageBooks = bookService.findByTitle(title, paging);
 
             books = pageBooks.getContent();
 
@@ -51,26 +48,58 @@ public class BookController {
         }
     }
 
-    @GetMapping("/book/{id}")
+    @GetMapping("/books/{id}")
     public ResponseEntity<Book> getBookById(@PathVariable("id") long id) {
-        Optional<Book> bookItem = bookRepository.findById(id);
-
-        if (bookItem.isPresent()) {
-            return new ResponseEntity<>(bookItem.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        try {
+            Book bookItem = bookService.findByBookId(id);
+            if (bookItem != null) {
+                return new ResponseEntity(bookItem, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping("/books")
     public ResponseEntity<Book> createBook(@RequestBody Book book) {
         try {
-            Book newBook = bookRepository
+            Book newBook = bookService
                     .save(new Book(book.getTitle(), book.getDescription()));
             return new ResponseEntity<>(newBook, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PutMapping("/books/{bookId}")
+    public ResponseEntity<Book> updateBook(
+            @PathVariable(value = "bookId") Long bookId,
+            @RequestBody Book bookDetails) {
+        try {
+            Book updatedBook = bookService.findByBookId(bookId);
+            updatedBook.setTitle(bookDetails.getTitle());
+            updatedBook.setDescription(bookDetails.getDescription());
+            bookService.save(updatedBook);
+            return new ResponseEntity<>(updatedBook, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("/books/{bookId}")
+    public ResponseEntity<Book> deleteBook(@PathVariable(value = "bookId") Long bookId) {
+       try {
+           Book deletedBook = bookService.findByBookId(bookId);
+           bookService.delete(deletedBook);
+           return new ResponseEntity<>(deletedBook, HttpStatus.OK);
+       }
+       catch(Exception e) {
+           return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+       }
+    }
+
+
 
 }

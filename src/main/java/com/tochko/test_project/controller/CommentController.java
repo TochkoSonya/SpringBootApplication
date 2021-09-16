@@ -2,36 +2,68 @@ package com.tochko.test_project.controller;
 
 import com.tochko.test_project.model.Book;
 import com.tochko.test_project.model.Comment;
-import com.tochko.test_project.repository.BookRepository;
-import com.tochko.test_project.repository.CommentRepository;
+import com.tochko.test_project.service.*;
 import org.apache.velocity.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api")
 public class CommentController {
 
     @Autowired
-    BookRepository bookRepository;
+    BookService bookService;
 
     @Autowired
-    CommentRepository commentRepository;
+    CommentService commentService;
 
-    @PostMapping("/comments/{bookId}/comment")
-    public ResponseEntity<Comment> createComment(@PathVariable("bookId") long bookId, @RequestBody Comment comment) {
+    @GetMapping("/books/{bookId}/comments")
+    public ResponseEntity<List<Comment>> getCommentsByBook(
+            @PathVariable("bookId") Long bookId,
+            @RequestParam(required = false) String text,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "3") int size ) {
+
+        try {
+            List<Comment> comments;
+            Pageable paging = PageRequest.of(page, size);
+
+            Page<Comment> pageComments;
+            if (text == null)
+                pageComments = commentService.findByBook_BookId(bookId,paging);
+            else
+                pageComments = commentService.findByText(text, paging);
+
+            comments = pageComments.getContent();
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("comments", comments);
+            response.put("currentPage", pageComments.getNumber());
+            response.put("totalItems", pageComments.getTotalElements());
+            response.put("totalPages", pageComments.getTotalPages());
+            return new ResponseEntity(response, HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/books/{bookId}/comments")
+    public ResponseEntity<Comment> createComment(@PathVariable("bookId") Long bookId, @RequestBody Comment comment) {
        try {
-           Optional<Book> optionalBook = bookRepository.findById(bookId);
-           if (!optionalBook.isPresent()) {
+           Book optionalBook = bookService.findByBookId(bookId);
+           if (optionalBook==null) {
                return ResponseEntity.unprocessableEntity().build();
            }
-           comment.setBook(optionalBook.get());
-
-           Comment newComment = commentRepository.save(comment);
+           comment.setBook(optionalBook);
+           Comment newComment = commentService.save(comment);
            return new ResponseEntity<>(newComment, HttpStatus.CREATED);
        }
        catch (Exception e) {
@@ -39,33 +71,36 @@ public class CommentController {
        }
     }
 
-    @PutMapping("/comments/{bookId}/comments/{commentId}")
+    @PutMapping("/books/{bookId}/comments/{commentId}")
     public ResponseEntity<Comment> updateComment(@PathVariable(value = "bookId") Long bookId,
                                @PathVariable(value = "commentId") Long commentId,
                                  @RequestBody Comment commentRequest) throws ResourceNotFoundException {
         try {
-            Optional<Book> optionalBook = bookRepository.findById(bookId);
-            Optional<Comment> optionalComment = commentRepository.findById(commentId);
-            if (!optionalBook.isPresent() || !optionalComment.isPresent()) {
-                //throw new ResourceNotFoundException("bookId not found");
+            Book optionalBook = bookService.findByBookId(bookId);
+            if (optionalBook==null) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-            Comment newComment = commentRepository.findByCommentId(commentId);
+            Comment newComment = commentService.findByCommentId(commentId);
             newComment.setText(commentRequest.getText());
-            commentRepository.save(newComment);
-
-
-//            return courseRepository.findById(courseId).map(course - > {
-//                    course.setTitle(courseRequest.getTitle());
-//            return courseRepository.save(course);
-//        }).orElseThrow(() -> new ResourceNotFoundException("course id not found"));
-
-            return new ResponseEntity(optionalComment.get(), HttpStatus.OK);
+            commentService.save(newComment);
+            return new ResponseEntity<>(newComment, HttpStatus.OK);
         }
-
         catch(Exception e) {
-            return new ResponseEntity(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
 
+    @DeleteMapping("/books/{bookId}/comments/{commentId}")
+    public ResponseEntity<Comment> deleteComment(@PathVariable(value = "bookId") Long bookId,
+                                                 @PathVariable(value = "commentId") Long commentId) {
+
+        try {
+            Comment deletedComment = commentService.findByCommentId(commentId);
+            commentService.delete(deletedComment);
+            return new ResponseEntity<>(deletedComment, HttpStatus.OK);
+        }
+        catch (Exception e){
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
