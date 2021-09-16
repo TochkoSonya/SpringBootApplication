@@ -17,14 +17,14 @@ public class Book {
     @Column(name = "description")
     private String description;
 
-    @OneToMany(mappedBy = "book")
+    @OneToMany(mappedBy = "book",cascade = CascadeType.ALL)
     private List<Comment> comments;
 
     @ManyToMany
     @JoinTable(name="book_author",
             joinColumns = @JoinColumn(name = "book_id", referencedColumnName = "bookId"),
             inverseJoinColumns = @JoinColumn(name = "author_id", referencedColumnName = "authorId"))
-    private List<Author> authors;
+    private List<Author> authorList;
 
     public Book(){}
 

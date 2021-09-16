@@ -17,9 +17,7 @@ public class BookService {
         return repository.findByBookId(id);
     }
     public Book save(Book book) { return repository.save(book); }
-    public void delete(Book book) {
-        repository.delete(book);
-    }
+    public void delete(Book book) { repository.delete(book); }
 
     public Page<Book> findByTitle(String title, Pageable pageable) {
         return repository.findByTitle(title,pageable);

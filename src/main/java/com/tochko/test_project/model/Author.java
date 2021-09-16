@@ -17,13 +17,13 @@ public class Author {
     @Column(name = "lastName")
     private String lastName;
 
-    @ManyToMany(mappedBy = "authors")
-    private List<Book> books;
+    @ManyToMany(mappedBy = "authorList")
+    private List<Book> bookList;
 
     public Author() {}
 
     public Author(List<Book> books) {
-        this.books = books;
+        this.bookList = books;
     }
 
     public Long getAuthorId() {

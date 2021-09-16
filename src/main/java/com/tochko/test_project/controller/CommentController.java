@@ -91,13 +91,14 @@ public class CommentController {
     }
 
     @DeleteMapping("/books/{bookId}/comments/{commentId}")
-    public ResponseEntity<Comment> deleteComment(@PathVariable(value = "bookId") Long bookId,
+    public ResponseEntity<?> deleteComment(@PathVariable(value = "bookId") Long bookId,
                                                  @PathVariable(value = "commentId") Long commentId) {
 
         try {
             Comment deletedComment = commentService.findByCommentId(commentId);
             commentService.delete(deletedComment);
             return new ResponseEntity<>(deletedComment, HttpStatus.OK);
+            //return ResponseEntity.ok().build();
         }
         catch (Exception e){
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);

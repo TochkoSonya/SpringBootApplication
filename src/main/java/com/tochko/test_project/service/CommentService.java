@@ -32,9 +32,8 @@ public class CommentService {
         return repository.save(comment);
     }
 
-    public Comment delete(Comment comment) {
+    public void delete(Comment comment) {
         repository.delete(comment);
-        return repository.findByCommentId(comment.getCommentId()); //?
     }
 
 
