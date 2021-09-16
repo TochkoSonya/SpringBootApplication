@@ -1,6 +1,7 @@
 package com.tochko.test_project.model;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -20,11 +21,11 @@ public class Book {
     @OneToMany(mappedBy = "book",cascade = CascadeType.ALL)
     private List<Comment> comments;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name="book_author",
             joinColumns = @JoinColumn(name = "book_id", referencedColumnName = "bookId"),
             inverseJoinColumns = @JoinColumn(name = "author_id", referencedColumnName = "authorId"))
-    private List<Author> authorList;
+    private List<Author> authors = new ArrayList<>();
 
     public Book(){}
 
@@ -43,6 +44,14 @@ public class Book {
 
     public void setDescription(String description) {
         this.description=description;
+    }
+
+    public void setAuthors(List<Author> authors) {
+        this.authors = authors;
+    }
+
+    public List<Author> getAuthors() {
+        return authors;
     }
 
     public Long getBookId() {

@@ -1,6 +1,8 @@
 package com.tochko.test_project.controller;
 
+import com.tochko.test_project.model.Author;
 import com.tochko.test_project.model.Book;
+import com.tochko.test_project.repository.AuthorRepository;
 import com.tochko.test_project.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,6 +20,9 @@ public class BookController {
 
     @Autowired
     BookService bookService;
+
+    @Autowired
+    AuthorRepository authorRepository;
 
     @GetMapping("/books")
     public ResponseEntity<List<Book>> getAllBooks(
@@ -68,6 +73,22 @@ public class BookController {
             Book newBook = bookService
                     .save(new Book(book.getTitle(), book.getDescription()));
             return new ResponseEntity<>(newBook, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/books/{bookId}/authors/{authorId}")
+    public ResponseEntity<Author> addAuthorToBook(@PathVariable("bookId") Long bookId, @PathVariable("authorId") Long authorId) {
+        try {
+            Author currentAuthor = authorRepository.findByAuthorId(authorId);
+            Book currentBook = bookService.findByBookId(bookId);
+            currentAuthor.getBookList().add(currentBook);
+            currentBook.getAuthors().add(currentAuthor);
+            authorRepository.save(currentAuthor);
+            bookService.save(currentBook);
+
+            return new ResponseEntity<>(null, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }

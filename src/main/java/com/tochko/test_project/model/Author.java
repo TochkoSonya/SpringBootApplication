@@ -1,6 +1,7 @@
 package com.tochko.test_project.model;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -17,14 +18,21 @@ public class Author {
     @Column(name = "lastName")
     private String lastName;
 
-    @ManyToMany(mappedBy = "authorList")
-    private List<Book> bookList;
+    @ManyToMany(mappedBy = "authors")
+    private List<Book> books = new ArrayList<>();
 
     public Author() {}
 
-    public Author(List<Book> books) {
-        this.bookList = books;
+    public Author(String firstName, String lastName) {
+        this.firstName=firstName;
+        this.lastName=lastName;
     }
+
+    public Author(List<Book> books) {
+        this.books = books;
+    }
+
+    public List<Book> getBookList() { return books; }
 
     public Long getAuthorId() {
         return authorId;
@@ -36,6 +44,10 @@ public class Author {
 
     public String getLastName() {
         return lastName;
+    }
+
+    public void setBooks(List<Book> books) {
+        this.books = books;
     }
 
     public void setAuthorId(Long authorId) {
