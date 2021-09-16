@@ -102,7 +102,7 @@ public class AuthorController {
         try {
            Author currentAuthor = authorService.findByAuthorId(authorId);
            Book currentBook = bookService.findByBookId(bookId);
-           currentAuthor.getBookList().add(currentBook);
+           currentAuthor.getBooks().add(currentBook);
            currentBook.getAuthors().add(currentAuthor);
             authorService.save(currentAuthor);
             bookService.save(currentBook);
@@ -133,10 +133,11 @@ public class AuthorController {
         try {
             Author deletedAuthor = authorService.findByAuthorId(authorId);
             authorService.delete(deletedAuthor);
-            return new ResponseEntity<>(deletedAuthor, HttpStatus.OK);
+            return new ResponseEntity<>(null, HttpStatus.OK);
         }
         catch(Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
+

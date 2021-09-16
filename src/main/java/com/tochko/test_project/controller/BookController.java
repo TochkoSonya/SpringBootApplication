@@ -83,7 +83,7 @@ public class BookController {
         try {
             Author currentAuthor = authorRepository.findByAuthorId(authorId);
             Book currentBook = bookService.findByBookId(bookId);
-            currentAuthor.getBookList().add(currentBook);
+            currentAuthor.getBooks().add(currentBook);
             currentBook.getAuthors().add(currentAuthor);
             authorRepository.save(currentAuthor);
             bookService.save(currentBook);

@@ -28,11 +28,11 @@ public class Author {
         this.lastName=lastName;
     }
 
-    public Author(List<Book> books) {
-        this.books = books;
-    }
+//    public Author(List<Book> books) {
+//        this.books = books;
+//    }
 
-    public List<Book> getBookList() { return books; }
+    public List<Book> getBooks() { return books; }
 
     public Long getAuthorId() {
         return authorId;
