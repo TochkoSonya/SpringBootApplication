@@ -20,6 +20,12 @@ public class Book {
     @OneToMany(mappedBy = "book")
     private List<Comment> comments;
 
+    @ManyToMany
+    @JoinTable(name="book_author",
+            joinColumns = @JoinColumn(name = "book_id", referencedColumnName = "bookId"),
+            inverseJoinColumns = @JoinColumn(name = "author_id", referencedColumnName = "authorId"))
+    private List<Author> authors;
+
     public Book(){}
 
     public Book(String title, String description){

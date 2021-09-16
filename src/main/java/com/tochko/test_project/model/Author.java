@@ -1,6 +1,7 @@
 package com.tochko.test_project.model;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name="authors")
@@ -16,7 +17,14 @@ public class Author {
     @Column(name = "lastName")
     private String lastName;
 
+    @ManyToMany(mappedBy = "authors")
+    private List<Book> books;
+
     public Author() {}
+
+    public Author(List<Book> books) {
+        this.books = books;
+    }
 
     public Long getAuthorId() {
         return authorId;
