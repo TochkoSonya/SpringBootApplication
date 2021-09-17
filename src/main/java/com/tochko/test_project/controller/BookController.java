@@ -114,7 +114,7 @@ public class BookController {
        try {
            Book deletedBook = bookService.findByBookId(bookId);
            bookService.delete(deletedBook);
-           return new ResponseEntity<>(deletedBook, HttpStatus.OK);
+           return new ResponseEntity<>(null, HttpStatus.OK);
        }
        catch(Exception e) {
            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
