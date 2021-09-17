@@ -4,6 +4,7 @@ import com.tochko.test_project.model.Author;
 import com.tochko.test_project.model.Book;
 import com.tochko.test_project.repository.AuthorRepository;
 import com.tochko.test_project.service.BookService;
+import lombok.extern.apachecommons.CommonsLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,6 +17,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api")
+@CommonsLog(topic = "BookLog")
 public class BookController {
 
     @Autowired
@@ -49,6 +51,7 @@ public class BookController {
 
             return new ResponseEntity(response, HttpStatus.OK);
         } catch (Exception e) {
+            log.error("Get all books fail");
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -63,6 +66,7 @@ public class BookController {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
+            log.error("Get book fail");
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -74,6 +78,7 @@ public class BookController {
                     .save(new Book(book.getTitle(), book.getDescription()));
             return new ResponseEntity<>(newBook, HttpStatus.CREATED);
         } catch (Exception e) {
+            log.error("Create book fail");
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -90,6 +95,7 @@ public class BookController {
 
             return new ResponseEntity<>(null, HttpStatus.OK);
         } catch (Exception e) {
+            log.error("Add author to book fail");
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -105,6 +111,7 @@ public class BookController {
             bookService.save(updatedBook);
             return new ResponseEntity<>(updatedBook, HttpStatus.CREATED);
         } catch (Exception e) {
+            log.error("Update book fail");
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -117,6 +124,7 @@ public class BookController {
            return new ResponseEntity<>(null, HttpStatus.OK);
        }
        catch(Exception e) {
+           log.error("Delete book fail");
            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
        }
     }

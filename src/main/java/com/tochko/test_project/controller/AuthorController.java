@@ -3,6 +3,8 @@ package com.tochko.test_project.controller;
 import com.tochko.test_project.model.Author;
 import com.tochko.test_project.model.Book;
 import com.tochko.test_project.service.*;
+import lombok.extern.apachecommons.CommonsLog;
+import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,6 +19,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
+@CommonsLog(topic = "AuthorLog")
 public class AuthorController {
 
     @Autowired
@@ -47,9 +50,9 @@ public class AuthorController {
             response.put("currentPage", pageAuthors.getNumber());
             response.put("totalItems", pageAuthors.getTotalElements());
             response.put("totalPages", pageAuthors.getTotalPages());
-
             return new ResponseEntity(response, HttpStatus.OK);
         } catch (Exception e) {
+            log.error("Get all authors fail");
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -59,11 +62,13 @@ public class AuthorController {
         try {
             Author authorItem = authorService.findById(authorId);
             if (authorItem != null) {
+                log.error("Get author success");
                 return new ResponseEntity(authorItem, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
+            log.error("Get author fail");
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -75,6 +80,7 @@ public class AuthorController {
                     .save(new Author(author.getFirstName(),author.getLastName()));
             return new ResponseEntity<>(newAuthor, HttpStatus.CREATED);
         } catch (Exception e) {
+            log.error("Create author fail");
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -91,6 +97,7 @@ public class AuthorController {
 
            return new ResponseEntity<>(null, HttpStatus.OK);
         } catch (Exception e) {
+            log.error("Add book to author fail");
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -106,6 +113,7 @@ public class AuthorController {
             authorService.save(updatedAuthor);
             return new ResponseEntity<>(updatedAuthor, HttpStatus.CREATED);
         } catch (Exception e) {
+            log.error("Update author fail");
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -118,6 +126,7 @@ public class AuthorController {
             return new ResponseEntity<>(null, HttpStatus.OK);
         }
         catch(Exception e) {
+            log.error("Delete author fail");
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

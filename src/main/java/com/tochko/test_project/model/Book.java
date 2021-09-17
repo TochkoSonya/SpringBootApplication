@@ -1,11 +1,14 @@
 package com.tochko.test_project.model;
 
+import lombok.Data;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "books")
+@Data
 public class Book {
 
     @Id
@@ -34,41 +37,4 @@ public class Book {
         this.description=description;
     }
 
-    public void setBookId(Long bookId) {
-        this.bookId=bookId;
-    }
-
-    public void setTitle(String title) {
-        this.title=title;
-    }
-
-    public void setDescription(String description) {
-        this.description=description;
-    }
-
-    public void setAuthors(List<Author> authors) {
-        this.authors = authors;
-    }
-
-    public List<Author> getAuthors() {
-        return authors;
-    }
-
-    public Long getBookId() {
-        return bookId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    @Override
-    public String toString() {
-        return "Book [id=" + bookId + ", title=" +
-                title + ", description=" + description + "]";
-    }
 }

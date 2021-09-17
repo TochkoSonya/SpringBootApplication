@@ -3,6 +3,7 @@ package com.tochko.test_project.controller;
 import com.tochko.test_project.model.Book;
 import com.tochko.test_project.model.Comment;
 import com.tochko.test_project.service.*;
+import lombok.extern.apachecommons.CommonsLog;
 import org.apache.velocity.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,6 +17,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api")
+@CommonsLog(topic="CommentLog")
 public class CommentController {
 
     @Autowired
@@ -51,6 +53,7 @@ public class CommentController {
             return new ResponseEntity(response, HttpStatus.OK);
 
         } catch (Exception e) {
+            log.error("Get comments fail");
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -67,6 +70,7 @@ public class CommentController {
            return new ResponseEntity<>(newComment, HttpStatus.CREATED);
        }
        catch (Exception e) {
+           log.error("Create comment fail");
            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
        }
     }
@@ -86,6 +90,7 @@ public class CommentController {
             return new ResponseEntity<>(newComment, HttpStatus.OK);
         }
         catch(Exception e) {
+            log.error("Update comment fail");
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -100,6 +105,7 @@ public class CommentController {
             return new ResponseEntity<>(deletedComment, HttpStatus.OK);
         }
         catch (Exception e){
+            log.error("Delete comment fail");
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
