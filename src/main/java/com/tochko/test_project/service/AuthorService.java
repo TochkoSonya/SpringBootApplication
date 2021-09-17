@@ -8,25 +8,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AuthorService {
+public class AuthorService implements CommonInterface<Author> {
 
     @Autowired
     private AuthorRepository repository;
 
     public Author save(Author author) { return repository.save(author); }
-
-    public void delete(Author author) {
-        repository.delete(author);
-    }
-
+    public void delete(Author author) { repository.delete(author); }
     public Page<Author> findAll(Pageable pageable) {
         return repository.findAll(pageable);
     }
-
-    public Author findByAuthorId(Long authorId) {
+    public Author findById(Long authorId) {
         return repository.findByAuthorId(authorId);
     }
-
     public Page<Author> findByLastName(String lastName, Pageable pageable) {
         return repository.findByLastName(lastName, pageable);
     }

@@ -56,7 +56,7 @@ public class BookController {
     @GetMapping("/books/{id}")
     public ResponseEntity<Book> getBookById(@PathVariable("id") long id) {
         try {
-            Book bookItem = bookService.findByBookId(id);
+            Book bookItem = bookService.findById(id);
             if (bookItem != null) {
                 return new ResponseEntity(bookItem, HttpStatus.OK);
             } else {
@@ -82,7 +82,7 @@ public class BookController {
     public ResponseEntity<Author> addAuthorToBook(@PathVariable("bookId") Long bookId, @PathVariable("authorId") Long authorId) {
         try {
             Author currentAuthor = authorRepository.findByAuthorId(authorId);
-            Book currentBook = bookService.findByBookId(bookId);
+            Book currentBook = bookService.findById(bookId);
             currentAuthor.getBooks().add(currentBook);
             currentBook.getAuthors().add(currentAuthor);
             authorRepository.save(currentAuthor);
@@ -99,7 +99,7 @@ public class BookController {
             @PathVariable(value = "bookId") Long bookId,
             @RequestBody Book bookDetails) {
         try {
-            Book updatedBook = bookService.findByBookId(bookId);
+            Book updatedBook = bookService.findById(bookId);
             updatedBook.setTitle(bookDetails.getTitle());
             updatedBook.setDescription(bookDetails.getDescription());
             bookService.save(updatedBook);
@@ -112,7 +112,7 @@ public class BookController {
     @DeleteMapping("/books/{bookId}")
     public ResponseEntity<Book> deleteBook(@PathVariable(value = "bookId") Long bookId) {
        try {
-           Book deletedBook = bookService.findByBookId(bookId);
+           Book deletedBook = bookService.findById(bookId);
            bookService.delete(deletedBook);
            return new ResponseEntity<>(null, HttpStatus.OK);
        }

@@ -8,17 +8,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
-public class BookService {
+public class BookService implements CommonInterface<Book> {
 
     @Autowired
     private BookRepository repository;
 
-    public Book findByBookId(Long id) {
+    public Book findById(Long id) {
         return repository.findByBookId(id);
     }
     public Book save(Book book) { return repository.save(book); }
     public void delete(Book book) { repository.delete(book); }
-
     public Page<Book> findByTitle(String title, Pageable pageable) {
         return repository.findByTitle(title,pageable);
     }

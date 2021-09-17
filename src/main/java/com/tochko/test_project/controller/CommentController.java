@@ -58,7 +58,7 @@ public class CommentController {
     @PostMapping("/books/{bookId}/comments")
     public ResponseEntity<Comment> createComment(@PathVariable("bookId") Long bookId, @RequestBody Comment comment) {
        try {
-           Book optionalBook = bookService.findByBookId(bookId);
+           Book optionalBook = bookService.findById(bookId);
            if (optionalBook==null) {
                return ResponseEntity.unprocessableEntity().build();
            }
@@ -76,11 +76,11 @@ public class CommentController {
                                @PathVariable(value = "commentId") Long commentId,
                                  @RequestBody Comment commentRequest) throws ResourceNotFoundException {
         try {
-            Book optionalBook = bookService.findByBookId(bookId);
+            Book optionalBook = bookService.findById(bookId);
             if (optionalBook==null) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-            Comment newComment = commentService.findByCommentId(commentId);
+            Comment newComment = commentService.findById(commentId);
             newComment.setText(commentRequest.getText());
             commentService.save(newComment);
             return new ResponseEntity<>(newComment, HttpStatus.OK);
@@ -95,10 +95,9 @@ public class CommentController {
                                                  @PathVariable(value = "commentId") Long commentId) {
 
         try {
-            Comment deletedComment = commentService.findByCommentId(commentId);
+            Comment deletedComment = commentService.findById(commentId);
             commentService.delete(deletedComment);
             return new ResponseEntity<>(deletedComment, HttpStatus.OK);
-            //return ResponseEntity.ok().build();
         }
         catch (Exception e){
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
