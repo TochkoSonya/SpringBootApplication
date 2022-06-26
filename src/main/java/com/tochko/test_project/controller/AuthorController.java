@@ -2,9 +2,9 @@ package com.tochko.test_project.controller;
 
 import com.tochko.test_project.model.Author;
 import com.tochko.test_project.model.Book;
-import com.tochko.test_project.service.*;
-import lombok.extern.apachecommons.CommonsLog;
-import lombok.extern.java.Log;
+import com.tochko.test_project.service.AuthorService;
+import com.tochko.test_project.service.BookService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,22 +17,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
-@RequestMapping("/api")
-@CommonsLog(topic = "AuthorLog")
+@RequestMapping("/api/author")
 public class AuthorController {
 
-    @Autowired
-    AuthorService authorService;
+    private final AuthorService authorService;
+    private final BookService bookService;
 
     @Autowired
-    BookService bookService;
+    public AuthorController(AuthorService authorService,
+                            BookService bookService) {
+        this.authorService = authorService;
+        this.bookService = bookService;
+    }
 
-    @GetMapping("/authors")
+    @GetMapping("/")
     public ResponseEntity<List<Author>> getAllAuthors(
             @RequestParam(required = false) String lastName,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "3") int size ) {
+            @RequestParam(defaultValue = "3") int size) {
         try {
             List<Author> authors;
             Pageable paging = PageRequest.of(page, size);
@@ -57,7 +61,7 @@ public class AuthorController {
         }
     }
 
-    @GetMapping("/authors/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Author> getAuthorById(@PathVariable("id") long authorId) {
         try {
             Author authorItem = authorService.findById(authorId);
@@ -73,11 +77,11 @@ public class AuthorController {
         }
     }
 
-    @PostMapping("/authors")
+    @PostMapping("/")
     public ResponseEntity<Author> createAuthor(@RequestBody Author author) {
         try {
             Author newAuthor = authorService
-                    .save(new Author(author.getFirstName(),author.getLastName()));
+                    .save(new Author(author.getFirstName(), author.getLastName()));
             return new ResponseEntity<>(newAuthor, HttpStatus.CREATED);
         } catch (Exception e) {
             log.error("Create author fail");
@@ -85,26 +89,27 @@ public class AuthorController {
         }
     }
 
-    @PutMapping("/authors/{authorId}/books/{bookId}")
-    public ResponseEntity<Author> addBookToAuthor(@PathVariable("authorId") Long authorId, @PathVariable("bookId") Long bookId) {
+    @PutMapping("/{authorId}/books/{bookId}")
+    public ResponseEntity<Author> addBookToAuthor(@PathVariable("authorId") Long authorId,
+                                                  @PathVariable("bookId") Long bookId) {
         try {
-           Author currentAuthor = authorService.findById(authorId);
-           Book currentBook = bookService.findById(bookId);
-           currentAuthor.getBooks().add(currentBook);
-           currentBook.getAuthors().add(currentAuthor);
+            Author currentAuthor = authorService.findById(authorId);
+            Book currentBook = bookService.findById(bookId);
+            currentAuthor.getBooks().add(currentBook);
+            currentBook.getAuthors().add(currentAuthor);
             authorService.save(currentAuthor);
             bookService.save(currentBook);
 
-           return new ResponseEntity<>(null, HttpStatus.OK);
+            return new ResponseEntity<>(null, HttpStatus.OK);
         } catch (Exception e) {
             log.error("Add book to author fail");
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @PutMapping("/authors/{authorId}")
+    @PutMapping("/{id}")
     public ResponseEntity<Author> updateAuthor(
-            @PathVariable(value = "authorId") Long authorId,
+            @PathVariable(value = "id") Long authorId,
             @RequestBody Author authorDetails) {
         try {
             Author updatedAuthor = authorService.findById(authorId);
@@ -118,14 +123,13 @@ public class AuthorController {
         }
     }
 
-    @DeleteMapping("/authors/{authorId}")
-    public ResponseEntity<Author> deleteAuthor(@PathVariable(value = "authorId") Long authorId) {
+    @DeleteMapping("/id}")
+    public ResponseEntity<Author> deleteAuthor(@PathVariable(value = "id") Long authorId) {
         try {
             Author deletedAuthor = authorService.findById(authorId);
             authorService.delete(deletedAuthor);
             return new ResponseEntity<>(null, HttpStatus.OK);
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             log.error("Delete author fail");
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }

@@ -1,23 +1,27 @@
 package com.tochko.test_project.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
-@Table(name="comments")
+@Table(name = "comments")
 @Data
-public class Comment {
+@NoArgsConstructor
+@AllArgsConstructor
+public class Comment implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long commentId;
 
-    @Column(name="text")
+    @Column(name = "text")
     private String text;
 
     @ManyToOne
-    @JoinColumn(name="book_id")
+    @JoinColumn(name = "book_id")
     private Book book;
-
 }

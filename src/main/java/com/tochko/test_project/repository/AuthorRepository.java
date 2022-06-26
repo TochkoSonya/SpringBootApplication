@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AuthorRepository extends JpaRepository<Author, Long> {
+
     Author findByAuthorId(Long id);
+
     Page<Author> findByLastName(String lastName, Pageable pageable);
 }

@@ -22,5 +22,4 @@ public class TestProjectApplication extends SpringBootServletInitializer {
         return new Docket(DocumentationType.SWAGGER_2).select()
                 .apis(RequestHandlerSelectors.basePackage("com.tochko.test_project")).build();
     }
-
 }

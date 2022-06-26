@@ -2,9 +2,9 @@ package com.tochko.test_project.controller;
 
 import com.tochko.test_project.model.Author;
 import com.tochko.test_project.model.Book;
-import com.tochko.test_project.repository.AuthorRepository;
+import com.tochko.test_project.service.AuthorService;
 import com.tochko.test_project.service.BookService;
-import lombok.extern.apachecommons.CommonsLog;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,24 +13,30 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+@Slf4j
 @RestController
-@RequestMapping("/api")
-@CommonsLog(topic = "BookLog")
+@RequestMapping("/api/book")
 public class BookController {
 
-    @Autowired
-    BookService bookService;
+    private final BookService bookService;
+    private final AuthorService authorService;
 
     @Autowired
-    AuthorRepository authorRepository;
+    public BookController(BookService bookService,
+                          AuthorService authorService) {
+        this.bookService = bookService;
+        this.authorService = authorService;
+    }
 
-    @GetMapping("/books")
+    @GetMapping("/")
     public ResponseEntity<List<Book>> getAllBooks(
-                    @RequestParam(required = false) String title,
-                    @RequestParam(defaultValue = "0") int page,
-                    @RequestParam(defaultValue = "3") int size ) {
+            @RequestParam(required = false) String title,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "3") int size) {
         try {
             List<Book> books;
             Pageable paging = PageRequest.of(page, size);
@@ -56,7 +62,7 @@ public class BookController {
         }
     }
 
-    @GetMapping("/books/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Book> getBookById(@PathVariable("id") long id) {
         try {
             Book bookItem = bookService.findById(id);
@@ -71,7 +77,7 @@ public class BookController {
         }
     }
 
-    @PostMapping("/books")
+    @PostMapping("/")
     public ResponseEntity<Book> createBook(@RequestBody Book book) {
         try {
             Book newBook = bookService
@@ -83,14 +89,14 @@ public class BookController {
         }
     }
 
-    @PutMapping("/books/{bookId}/authors/{authorId}")
+    @PutMapping("/{bookId}/authors/{authorId}")
     public ResponseEntity<Author> addAuthorToBook(@PathVariable("bookId") Long bookId, @PathVariable("authorId") Long authorId) {
         try {
-            Author currentAuthor = authorRepository.findByAuthorId(authorId);
+            Author currentAuthor = authorService.findById(authorId);
             Book currentBook = bookService.findById(bookId);
             currentAuthor.getBooks().add(currentBook);
             currentBook.getAuthors().add(currentAuthor);
-            authorRepository.save(currentAuthor);
+            authorService.save(currentAuthor);
             bookService.save(currentBook);
 
             return new ResponseEntity<>(null, HttpStatus.OK);
@@ -100,9 +106,9 @@ public class BookController {
         }
     }
 
-    @PutMapping("/books/{bookId}")
+    @PutMapping("/{id}")
     public ResponseEntity<Book> updateBook(
-            @PathVariable(value = "bookId") Long bookId,
+            @PathVariable(value = "id") Long bookId,
             @RequestBody Book bookDetails) {
         try {
             Book updatedBook = bookService.findById(bookId);
@@ -116,19 +122,15 @@ public class BookController {
         }
     }
 
-    @DeleteMapping("/books/{bookId}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Book> deleteBook(@PathVariable(value = "bookId") Long bookId) {
-       try {
-           Book deletedBook = bookService.findById(bookId);
-           bookService.delete(deletedBook);
-           return new ResponseEntity<>(null, HttpStatus.OK);
-       }
-       catch(Exception e) {
-           log.error("Delete book fail");
-           return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-       }
+        try {
+            Book deletedBook = bookService.findById(bookId);
+            bookService.delete(deletedBook);
+            return new ResponseEntity<>(null, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Delete book fail");
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
-
-
-
 }
